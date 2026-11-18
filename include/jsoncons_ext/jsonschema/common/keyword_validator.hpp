@@ -640,7 +640,9 @@ namespace jsonschema {
 
             eval_context<Json> this_context(context, this->keyword());
 
-            if (!std::regex_search(instance.as_cstring(), regex_))
+            // JSON strings may contain NUL; do not truncate schema validation.
+            const auto text = instance.as_string_view();
+            if (!std::regex_search(text.begin(), text.end(), regex_))
             {
                 std::string message("String '");
                 message.append(instance.as_cstring());
